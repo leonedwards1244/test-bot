@@ -1,0 +1,55 @@
+# .gcloudignore files are used to exclude files from being uploaded to Google Cloud
+# during gcloud app deploy, gcloud builds submit, or gcloud run deploy
+
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# Node modules - will be re-installed in container
+node_modules/
+
+# Development dependencies
+package-lock.json
+
+# Environment files (use Cloud Secret Manager instead)
+.env
+.env.example
+.env.local
+.env.*.local
+
+# Development and testing files
+dist/
+*.tsbuildinfo
+coverage/
+.nyc_output/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Build cache
+.eslintcache
+.prettier/.cache
+
+# Testing
+*.test.ts
+*.spec.ts
+__tests__/
+
+# Documentation
+docs/
+.docs/
+
+# CI/CD files
+.github/
+.gitlab-ci.yml
+
+# Other
+README.md
+CONTRIBUTING.md
+LICENSE

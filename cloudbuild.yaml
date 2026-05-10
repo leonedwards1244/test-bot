@@ -1,0 +1,55 @@
+substitutions:
+  _TELEGRAM_ADMIN_IDS: '123456789,987654321'
+  _SOLANA_RPC_URL: 'https://api.mainnet-beta.solana.com'
+  _SOLANA_WS_URL: 'wss://api.mainnet-beta.solana.com'
+  _SOLANA_BASE_FEE_LAMPORTS: '5000'
+  _LAYERZERO_API_URL: 'https://layerzero-api.example.com'
+  _LAYERZERO_CHAIN_IDS: '1,137,56'
+  _POLYMARKET_API_URL: 'https://polymarket.com/api'
+  _PERFORMANCE_SCORE_LOOKBACK_DAYS: '30'
+  _REQUESTS_PER_MINUTE: '30'
+
+steps:
+  # Step 1: Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'europe-west1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/leonedwards1244-test-bot/test-bot-git:$COMMIT_SHA'
+      - '-t'
+      - 'europe-west1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/leonedwards1244-test-bot/test-bot-git:latest'
+      - '.'
+    id: 'Build'
+
+  # Step 2: Push the Docker image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'europe-west1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/leonedwards1244-test-bot/test-bot-git:latest'
+    id: 'Push'
+    waitFor: ['Build']
+
+  # Step 3: Deploy to Cloud Run with environment variables
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+      - '-lc'
+      - |
+        gcloud run deploy test-bot \
+          --image=europe-west1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/leonedwards1244-test-bot/test-bot-git:$COMMIT_SHA \
+          --region=europe-west1 \
+          --platform=managed \
+          --allow-unauthenticated \
+          --set-env-vars=TELEGRAM_ADMIN_IDS="$_TELEGRAM_ADMIN_IDS",SOLANA_RPC_URL="$_SOLANA_RPC_URL",SOLANA_WS_URL="$_SOLANA_WS_URL",SOLANA_BASE_FEE_LAMPORTS="$_SOLANA_BASE_FEE_LAMPORTS",LAYERZERO_API_URL="$_LAYERZERO_API_URL",LAYERZERO_CHAIN_IDS="$_LAYERZERO_CHAIN_IDS",POLYMARKET_API_URL="$_POLYMARKET_API_URL",PERFORMANCE_SCORE_LOOKBACK_DAYS="$_PERFORMANCE_SCORE_LOOKBACK_DAYS",REQUESTS_PER_MINUTE="$_REQUESTS_PER_MINUTE" \
+          --set-secrets=TELEGRAM_BOT_TOKEN=TELEGRAM_BOT_TOKEN:latest,DATABASE_URL=DATABASE_URL:latest,LAYERZERO_FEE_PAYER_PRIVATE_KEY=LAYERZERO_FEE_PAYER_PRIVATE_KEY:latest
+    id: 'Deploy'
+    waitFor: ['Push']
+
+images:
+  - 'europe-west1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/leonedwards1244-test-bot/test-bot-git:latest'
+  - 'europe-west1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/leonedwards1244-test-bot/test-bot-git:$COMMIT_SHA'
+
+options:
+  machineType: 'N1_HIGHCPU_8'
+
+timeout: 1800s

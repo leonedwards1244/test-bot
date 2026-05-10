@@ -1,0 +1,42 @@
+# Git
+.git
+.gitignore
+
+# Node modules (we'll install fresh in container)
+node_modules
+
+# Development files
+npm-debug.log
+yarn-error.log
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Build artifacts (for multi-stage, we only care about src and dist)
+dist
+coverage
+
+# Testing
+__tests__
+*.test.ts
+*.spec.ts
+
+# Package manager locks (optional, but good practice)
+package-lock.json
+
+# IDEs and editors
+.vscode
+.idea
+.DS_Store
+*.swp
+*.swo
+
+# Documentation
+README.md
+CONTRIBUTING.md
+LICENSE
+
+# CI/CD
+.github
