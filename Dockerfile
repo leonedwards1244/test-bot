@@ -31,13 +31,13 @@ RUN npm install --production
 COPY --from=builder /app/dist ./dist
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
   CMD node -e "require('http').get('http://localhost:' + (process.env.PORT || 3000), (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
 
-# Expose port (for local testing)
-EXPOSE 8080
+# Expose port (Railway injects PORT at runtime)
+EXPOSE 3000
 
 # Start the application
 ENV NODE_ENV=production
-ENV PORT=8080
+ENV PORT=3000
 CMD ["node", "dist/index.js"]
