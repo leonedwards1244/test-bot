@@ -5,7 +5,7 @@ import { TrackedWallet, TraderScore, UserPreference } from './schemas';
 export const AppDataSource = new DataSource({
   type: 'postgres',
   url: config.database.url,
-  synchronize: false,
+  synchronize: true,
   logging: false,
   entities: [TrackedWallet, TraderScore, UserPreference]
 });
