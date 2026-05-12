@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import http from 'http';
 import { initializeDatabase } from './db';
 import { createTelegramBot } from './bot/telegram';
